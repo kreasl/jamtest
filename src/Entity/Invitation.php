@@ -6,9 +6,14 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\InvitationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Invitation
 {
+    public const STATUS_CREATED = 0;
+    public const STATUS_ACCEPTED = 1;
+    public const STATUS_DECLINED = 2;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -89,22 +94,24 @@ class Invitation
         return $this->created;
     }
 
-    public function setCreated(\DateTimeInterface $created): self
-    {
-        $this->created = $created;
-
-        return $this;
-    }
-
     public function getUpdated(): ?\DateTimeInterface
     {
         return $this->updated;
     }
 
-    public function setUpdated(\DateTimeInterface $updated): self
-    {
-        $this->updated = $updated;
+    /**
+     * @ORM\PrePersist
+     */
+    public function onCreate() {
+        $this->status = self::STATUS_CREATED;
+        $this->created = new \DateTime();
+        $this->updated = new \DateTime();
+    }
 
-        return $this;
+    /**
+     * @ORM\PreUpdate
+     */
+    public function onUpdate() {
+        $this->updated = new \DateTime();
     }
 }

@@ -42,7 +42,21 @@ class InvitationsController extends Controller
      */
     public function send($userId)
     {
-        return $this->render('invitations/success.html.twig');
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $senderId = $this->get('session')->get('userId');
+
+        $sender = $this->getDoctrine()->getRepository(User::class)->findOneById($senderId);
+        $receiver = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
+
+        $invitation = new Invitation();
+        $invitation->setSenderId($sender);
+        $invitation->setInvitedId($receiver);
+
+        $entityManager->persist($invitation);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('invitationOperationSuccess');
     }
 
     /**
@@ -50,7 +64,15 @@ class InvitationsController extends Controller
      */
     public function accept($invitationId)
     {
-        return $this->render('invitations/success.html.twig');
+        $invitation = $this->getDoctrine()->getRepository(Invitation::class)->findOneById($invitationId);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $invitation->setStatus(Invitation::STATUS_ACCEPTED);
+
+        $entityManager->persist($invitation);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('invitationOperationSuccess');
     }
 
     /**
@@ -58,6 +80,26 @@ class InvitationsController extends Controller
      */
     public function decline($invitationId)
     {
-        return $this->render('invitations/success.html.twig');
+        $invitation = $this->getDoctrine()->getRepository(Invitation::class)->findOneById($invitationId);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $invitation->setStatus(Invitation::STATUS_DECLINED);
+
+        $entityManager->persist($invitation);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('invitationOperationSuccess');
+    }
+
+    /**
+     * @Route("/invitations/success/", name="invitationOperationSuccess")
+     */
+    public function success()
+    {
+        $userId = $this->get('session')->get('userId');
+
+        return $this->render('invitations/success.html.twig', [
+            'backLink' => $this->generateUrl('userDetails', ['userId' => $userId])
+        ]);
     }
 }
