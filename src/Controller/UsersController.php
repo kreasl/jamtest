@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Invitation;
 use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,9 +16,9 @@ class UsersController extends Controller
     {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
-        return $this->render('users/index.html.twig', [
-            'users' => $users,
-        ]);
+        $cleanUsers = array_map([$this, 'obfuscateUser'], $users);
+
+        return $this->json($cleanUsers);
     }
 
     /**
@@ -31,10 +32,55 @@ class UsersController extends Controller
         $sentCount = $user->getSentInvitations()->count();
         $receivedCount = $user->getReceivedInvitations()->count();
 
-        return $this->render('users/details.html.twig', [
-            'user' => $user,
+        return $this->json([
+            'user' => $this->obfuscateUser($user),
             'sentCount' => $sentCount,
             'receivedCount' => $receivedCount,
         ]);
+    }
+
+
+    /**
+     * @Route("/users/{userId}/invitations/sent", name="sentInvitations")
+     */
+    public function sent($userId)
+    {
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
+        $invitations = $user->getSentInvitations()->getValues();
+        $cleanInvitations = array_map([$this, 'obfuscateInvitation'], $invitations);
+
+        return $this->json([
+            'user' => $this->obfuscateUser($user),
+            'invitations' => $cleanInvitations,
+        ]);
+    }
+
+    /**
+     * @Route("/users/{userId}/invitations/received", name="receivedInvitations")
+     */
+    public function received($userId)
+    {
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
+        $invitations = $user->getReceivedInvitations()->getValues();
+        $cleanInvitations = array_map([$this, 'obfuscateInvitation'], $invitations);
+
+        return $this->json([
+            'user' => $this->obfuscateUser($user),
+            'invitations' => $cleanInvitations,
+        ]);
+    }
+
+    protected function obfuscateUser(User $user) {
+        return [
+            'id' => $user->getId(),
+            'name' => $user->getName(),
+        ];
+    }
+
+    protected function obfuscateInvitation(Invitation $invitation) {
+        return [
+            'id' => $invitation->getId(),
+            'created' => $invitation->getCreated(),
+        ];
     }
 }

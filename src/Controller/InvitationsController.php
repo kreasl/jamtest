@@ -10,34 +10,6 @@ use App\Entity\Invitation;
 class InvitationsController extends Controller
 {
     /**
-     * @Route("/invitations/sent/{userId}", name="sentInvitations")
-     */
-    public function sent($userId)
-    {
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
-        $invitations = $user->getSentInvitations();
-
-        return $this->render('invitations/sent.html.twig', [
-            'user' => $user,
-            'invitations' => $invitations,
-        ]);
-    }
-
-    /**
-     * @Route("/invitations/received/{userId}", name="receivedInvitations")
-     */
-    public function received($userId)
-    {
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
-        $invitations = $user->getReceivedInvitations();
-
-        return $this->render('invitations/received.html.twig', [
-            'user' => $user,
-            'invitations' => $invitations,
-        ]);
-    }
-
-    /**
      * @Route("/invitations/send/{userId}", name="sendInvitation")
      */
     public function send($userId)
@@ -56,7 +28,7 @@ class InvitationsController extends Controller
         $entityManager->persist($invitation);
         $entityManager->flush();
 
-        return $this->redirectToRoute('invitationOperationSuccess');
+        return $this->json(['success' => true]);
     }
 
     /**
@@ -72,7 +44,7 @@ class InvitationsController extends Controller
         $entityManager->persist($invitation);
         $entityManager->flush();
 
-        return $this->redirectToRoute('invitationOperationSuccess');
+        return $this->json(['success' => true]);
     }
 
     /**
@@ -88,18 +60,6 @@ class InvitationsController extends Controller
         $entityManager->persist($invitation);
         $entityManager->flush();
 
-        return $this->redirectToRoute('invitationOperationSuccess');
-    }
-
-    /**
-     * @Route("/invitations/success/", name="invitationOperationSuccess")
-     */
-    public function success()
-    {
-        $userId = $this->get('session')->get('userId');
-
-        return $this->render('invitations/success.html.twig', [
-            'backLink' => $this->generateUrl('userDetails', ['userId' => $userId])
-        ]);
+        return $this->json(['success' => true]);
     }
 }
