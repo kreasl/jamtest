@@ -1,7 +1,15 @@
 import { Link } from "react-router-dom";
 import React from "react";
 
-function Profile({ name, sentCount, receivedCount }) {
+function Profile(props) {
+  if (!props.name) {
+    props.loadUsers();
+
+    return <p>Loading...</p>
+  }
+
+  const { name, sentCount, receivedCount } = props;
+
   return (
     <div className="profile">
       <h2>{name} profile</h2>

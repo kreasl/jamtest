@@ -9,9 +9,7 @@ export const getSentInvitations = (state, userId) => state
 export const getReceivedInvitations = (state, userId) => state
   .filter(invitation => invitation.receiverId === userId);
 
-export default (state = initialInvitations, action = null) => {
-  if (!action) return initialInvitations;
-
+export default (state = null, action = null) => {
   switch (action.type) {
     case ADD_INVITATION_ACTION:
       return [
