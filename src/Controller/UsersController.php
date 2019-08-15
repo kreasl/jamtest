@@ -49,10 +49,7 @@ class UsersController extends Controller
         $invitations = $user->getSentInvitations()->getValues();
         $cleanInvitations = array_map([$this, 'obfuscateInvitation'], $invitations);
 
-        return $this->json([
-            'user' => $this->obfuscateUser($user),
-            'invitations' => $cleanInvitations,
-        ]);
+        return $this->json($cleanInvitations);
     }
 
     /**
@@ -64,10 +61,7 @@ class UsersController extends Controller
         $invitations = $user->getReceivedInvitations()->getValues();
         $cleanInvitations = array_map([$this, 'obfuscateInvitation'], $invitations);
 
-        return $this->json([
-            'user' => $this->obfuscateUser($user),
-            'invitations' => $cleanInvitations,
-        ]);
+        return $this->json($cleanInvitations);
     }
 
     protected function obfuscateUser(User $user) {

@@ -1,20 +1,19 @@
-import { Link } from "react-router-dom";
-import React from "react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import {useCurrentUser, useSentInvitations, useReceivedInvitations } from '../hooks/api';
 
-function Profile(props) {
-  if (!props.name) {
-    props.loadUsers();
+function Profile() {
+  const user = useCurrentUser();
+  const [sentInvitations] = useSentInvitations();
+  const [receivedInvitations] = useReceivedInvitations();
 
-    return <p>Loading...</p>
-  }
-
-  const { name, sentCount, receivedCount } = props;
+  if (!user || !sentInvitations || !receivedInvitations) return <p>Loading...</p>;
 
   return (
     <div className="profile">
-      <h2>{name} profile</h2>
-      <div>Sent: <Link to="/sent/">{sentCount}</Link></div>
-      <div>Received: <Link to="/received/">{receivedCount}</Link></div>
+      <h2>Logged in as {user.name}</h2>
+      <div>Sent: <Link to="/sent/">{sentInvitations.length}</Link></div>
+      <div>Received: <Link to="/received/">{receivedInvitations.length}</Link></div>
       <div><Link to="/invite/">Invite</Link></div>
     </div>
   );

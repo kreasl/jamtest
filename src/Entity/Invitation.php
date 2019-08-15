@@ -12,7 +12,8 @@ class Invitation
 {
     public const STATUS_CREATED = 0;
     public const STATUS_ACCEPTED = 1;
-    public const STATUS_DECLINED = 2;
+    public const STATUS_DECLINED = 10;
+    public const STATUS_CANCELED = 20;
 
     /**
      * @ORM\Id()

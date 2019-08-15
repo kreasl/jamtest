@@ -1,15 +1,22 @@
-import React from "react";
+import React from 'react';
 
-import Invitation from './Invitation';
+import { useSentInvitations } from '../hooks/api';
+import Invitation from "./Invitation";
 
 function Sent({ sentInvitations }) {
-  const invitations = sentInvitations.map(
+  const [sent] = useSentInvitations();
+
+  if (!sent) return <p>Loading...</p>
+
+  const invitations = sent.map(
     invitation => (
-      <li>
-        <Invitation invitation={invitation} type="sent" />
+      <li key={invitation.id}>
+        <Invitation invitation={invitation} />
       </li>
     ),
   );
+
+  if (!invitations.length) return <p>No invitations sent</p>;
 
   return (
     <div className="sent">

@@ -1,15 +1,22 @@
-import React from "react";
+import React from 'react';
 
 import Invitation from './Invitation';
+import { useReceivedInvitations } from '../hooks/api';
 
 function Received({ receivedInvitations }) {
-  const invitations = receivedInvitations.map(
+  const [received] = useReceivedInvitations();
+
+  if (!received) return <p>Loading...</p>
+
+  const invitations = received.map(
     invitation => (
-      <li>
+      <li key={invitation.id}>
         <Invitation invitation={invitation} type="received" />
       </li>
     ),
   );
+
+  if (!invitations.length) return <p>No invitations received</p>
 
   return (
     <div className="received">

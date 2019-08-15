@@ -1,65 +1,53 @@
-import React from "react";
+import React, { useState } from 'react';
 
-class Invite extends React.Component {
-  constructor(props) {
-    super(props);
+import { useUsers, usePostInviteEndpoint } from '../hooks/api';
 
-    this.state = {
-      senderId: props.senderId,
-      receiverId: props.otherUsers[0].id || null,
-      message: null,
-    };
+const currentUserId = 1;
 
-    this.handleReceiver = this.handleReceiver.bind(this);
-    this.handleMessage = this.handleMessage.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
+export default function Invite(props) {
+  const [receiverId, setReceiverId] = useState();
+  const [message, setMessage] = useState('');
+  const [inviteResponse, postNewInvite] = usePostInviteEndpoint();
 
-  handleReceiver(event) {
-    this.setState({ receiverId: event.target.value });
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  handleMessage(event) {
-    console.log(event.target.value);
-    this.setState({ message: event.target.value });
-  }
+    postNewInvite({
+      id: 42,
+    });
 
-  handleSubmit(event) {
-    event.preventDefault();
-
-    this.props.addInvitation(this.state);
-
-    this.props.history.push('/');
+    // props.history.push('/');
   };
 
-  render() {
-    const { otherUsers, senderId } = this.props;
-    const receivers = otherUsers.map(user => <option key={user.id} value={user.id}>{user.name}</option>);
+  const [users] = useUsers();
 
-    return (
-      <div className="invite">
-        <h2>Invite</h2>
-        <form onSubmit={this.handleSubmit}>
-          <div>
-            <label>Receiver
-              <select>
-                {receivers}
-              </select>
-            </label>
-          </div>
-          <div>
-            <label>Message
-              <input type="text" onChange={this.handleMessage} />
-            </label>
-          </div>
-          <div>
-            <input type="hidden" name="senderId" value={senderId}/>
-            <input type="submit" value="Send"/>
-          </div>
-        </form>
-      </div>
-    );
-  }
+  if (!users) return <p>Loading...</p>;
+  if (users.length && !receiverId) setReceiverId(users[0].id);
+
+  const receivers = users
+    .filter(user => user.id !== currentUserId)
+    .map(user => <option key={user.id} value={user.id}>{user.name}</option>);
+
+  return (
+    <div className="invite">
+      <h2>Invite</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Receiver
+            <select value={receiverId} onChange={e => setReceiverId(e.target.value)}>
+              {receivers}
+            </select>
+          </label>
+        </div>
+        <div>
+          <label>Message
+            <input type="text" value={message} onChange={e => setMessage(e.target.value)}/>
+          </label>
+        </div>
+        <div>
+          <input type="submit" value="Send"/>
+        </div>
+      </form>
+    </div>
+  );
 }
-
-export default Invite;

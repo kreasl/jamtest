@@ -1,10 +1,10 @@
 import React from 'react';
 import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
 
-import Profile from '../containers/Profile';
-import Sent from '../containers/Sent';
-import Received from '../containers/Received';
-import Invite from '../containers/Invite';
+import Profile from './Profile';
+import Sent from './Sent';
+import Received from './Received';
+import Invite from './Invite';
 
 import '../App.css';
 
