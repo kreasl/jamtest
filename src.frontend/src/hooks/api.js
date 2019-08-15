@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const apiUrl = 'http://localhost:3000/data';
+const apiUrl = 'http://127.0.0.1:8000';
 
 export const STATUS_CREATED = 0;
 export const STATUS_ACCEPTED = 1;
@@ -19,9 +19,9 @@ export const useUsers = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios(`${apiUrl}/users.json`);
+      const result = await axios(`${apiUrl}/users`);
 
-      setUsers(result.data.users);
+      setUsers(result.data);
     };
 
     fetchData();
@@ -44,19 +44,12 @@ export const useCurrentUser = () => {
 };
 
 export const useInvitations = () => {
+  const currentUserId = useCurrentUserId();
   const [invitations, setInvitations] = useState();
-
-  const statusString = status => {
-    if (status === STATUS_ACCEPTED) return 'accepted';
-    if (status === STATUS_DECLINED) return 'declined';
-    if (status === STATUS_CANCELED) return 'canceled';
-
-    return 'created';
-  };
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios(`${apiUrl}/invitations.json`);
+      const result = await axios(`${apiUrl}/users/${currentUserId}/invitations`);
 
       const invitations = result.data.map(invitation => ({
         ...invitation,
@@ -67,7 +60,15 @@ export const useInvitations = () => {
     };
 
     fetchData();
-  }, []);
+  }, [currentUserId]);
+
+  const statusString = status => {
+    if (status === STATUS_ACCEPTED) return 'accepted';
+    if (status === STATUS_DECLINED) return 'declined';
+    if (status === STATUS_CANCELED) return 'canceled';
+
+    return 'created';
+  };
 
   return [invitations];
 };

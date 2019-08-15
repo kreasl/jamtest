@@ -39,6 +39,20 @@ class UsersController extends Controller
         ]);
     }
 
+    /**
+     * @Route("/users/{userId}/invitations", name="usersInvitations")
+     */
+    public function invitations($userId)
+    {
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
+        $invitations = array_merge(
+            $user->getSentInvitations()->getValues(),
+            $user->getReceivedInvitations()->getValues()
+        );
+        $cleanInvitations = array_map([$this, 'obfuscateInvitation'], $invitations);
+
+        return $this->json($cleanInvitations);
+    }
 
     /**
      * @Route("/users/{userId}/invitations/sent", name="sentInvitations")
@@ -75,6 +89,9 @@ class UsersController extends Controller
         return [
             'id' => $invitation->getId(),
             'created' => $invitation->getCreated(),
+            'status' => $invitation->getStatus(),
+            'senderId' => $invitation->getSenderId()->getId(),
+            'receiverId' => $invitation->getInvitedId()->getId(),
         ];
     }
 }
