@@ -8,5 +8,6 @@ use `symfony start:server` to run application - it should be served at http://12
 
 ## Contribution
 There's a quick dirty solution applied to run React application along with Symfony one
+
 Because of that if you'd like to play with react code - you need to build and "deploy" React files manually:
 `(cd src.frontend; npm run-script build ; cp ./build/index.html ../templates/ui/; cp -r ./build/static ../public/; ../bin/console cache:clear)`
