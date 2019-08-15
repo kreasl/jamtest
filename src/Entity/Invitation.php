@@ -35,6 +35,11 @@ class Invitation
     private $invited;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $message;
+
+    /**
      * @ORM\Column(type="integer")
      */
     private $status;
@@ -74,6 +79,18 @@ class Invitation
     public function setInvitedId(?User $invited): self
     {
         $this->invited = $invited;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage($message): self
+    {
+        $this->message = $message;
 
         return $this;
     }

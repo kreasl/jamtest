@@ -104,6 +104,7 @@ class UsersController extends Controller
         return [
             'id' => $invitation->getId(),
             'created' => $invitation->getCreated(),
+            'message' => $invitation->getMessage(),
             'status' => $invitation->getStatus(),
             'senderId' => $invitation->getSenderId()->getId(),
             'receiverId' => $invitation->getInvitedId()->getId(),

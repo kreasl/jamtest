@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import { Redirect } from 'react-router-dom';
 import {
   useCurrentUserId,
   usePostChangeInvitationStatus,
@@ -6,13 +7,15 @@ import {
   STATUS_DECLINED,
   STATUS_CANCELED,
   STATUS_CREATED,
-} from "../hooks/api";
+} from '../hooks/api';
 
 function Invitation(props) {
   const currentUserId = useCurrentUserId();
   const [updateResponse, updateInvitationStatus] = usePostChangeInvitationStatus();
 
   if (!currentUserId) return <p>Loading...</p>;
+
+  if (updateResponse.complete) return <Redirect to="/" />
 
   const { invitation } = props;
 
@@ -47,8 +50,8 @@ function Invitation(props) {
 
   return (
     <div className="Invitation">
-      <span className="InvitationBody">{invitation.created}</span>
-      <span className="InvitationStatus">{invitation.statusString}</span>
+      <b className="InvitationBody">{invitation.message}</b>
+      <div><span className="InvitationStatus">{invitation.statusString}</span></div>
       <div className="InvitationControllers">
         {controllers}
       </div>

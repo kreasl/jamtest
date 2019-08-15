@@ -17,13 +17,14 @@ export default function Invite(props) {
       receiverId,
       message,
     });
-
-    // props.history.push('/');
   };
 
   const [users] = useOtherUsers();
 
   if (!users) return <p>Loading...</p>;
+
+  if (inviteResponse.pending) return '<p>Sending...</p>';
+  if (inviteResponse.complete) props.history.push('/sent');
 
   const receivers = users
     .map(user => <option key={user.id} value={user.id}>{user.name}</option>);

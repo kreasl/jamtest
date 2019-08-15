@@ -38,7 +38,7 @@ class InvitationsController extends Controller
         $invitation = new Invitation();
         $invitation->setSenderId($sender);
         $invitation->setInvitedId($receiver);
-        
+        $invitation->setMessage($message);
 
         $entityManager->persist($invitation);
         $entityManager->flush();
