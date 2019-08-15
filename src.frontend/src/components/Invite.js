@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useUsers, usePostInviteEndpoint } from '../hooks/api';
+import { useOtherUsers, usePostInviteEndpoint } from '../hooks/api';
 
 const currentUserId = 1;
 
@@ -13,20 +13,22 @@ export default function Invite(props) {
     e.preventDefault();
 
     postNewInvite({
-      id: 42,
+      senderId: currentUserId,
+      receiverId,
+      message,
     });
 
     // props.history.push('/');
   };
 
-  const [users] = useUsers();
+  const [users] = useOtherUsers();
 
   if (!users) return <p>Loading...</p>;
-  if (users.length && !receiverId) setReceiverId(users[0].id);
 
   const receivers = users
-    .filter(user => user.id !== currentUserId)
     .map(user => <option key={user.id} value={user.id}>{user.name}</option>);
+
+  if (users.length && !receiverId) setReceiverId(users[0].id);
 
   return (
     <div className="invite">
@@ -34,7 +36,7 @@ export default function Invite(props) {
       <form onSubmit={handleSubmit}>
         <div>
           <label>Receiver
-            <select value={receiverId} onChange={e => setReceiverId(e.target.value)}>
+            <select value={receiverId} onChange={e => {console.log(e.target.value); setReceiverId(e.target.value)}}>
               {receivers}
             </select>
           </label>

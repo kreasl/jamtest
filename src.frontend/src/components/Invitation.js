@@ -48,6 +48,7 @@ function Invitation(props) {
   return (
     <div className="Invitation">
       <span className="InvitationBody">{invitation.created}</span>
+      <span className="InvitationStatus">{invitation.statusString}</span>
       <div className="InvitationControllers">
         {controllers}
       </div>

@@ -22,8 +22,23 @@ class UsersController extends Controller
     }
 
     /**
-     * @param int $id
-     *
+     * @Route("/users/profile", name="profile")
+     */
+    public function profile()
+    {
+        $userId = $data['senderId'] ?? $this->get('session')->get('userId');
+        $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
+        $sentCount = $user->getSentInvitations()->count();
+        $receivedCount = $user->getReceivedInvitations()->count();
+
+        return $this->json([
+            'user' => $this->obfuscateUser($user),
+            'sentCount' => $sentCount,
+            'receivedCount' => $receivedCount,
+        ]);
+    }
+
+    /**
      * @Route("/users/{userId}", name="userDetails")
      */
     public function details($userId)

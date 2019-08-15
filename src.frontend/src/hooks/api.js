@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const apiUrl = 'http://127.0.0.1:8000';
+// Expected to be in the root on the same server
+const apiUrl = '';
 
 export const STATUS_CREATED = 0;
 export const STATUS_ACCEPTED = 1;
@@ -9,7 +10,17 @@ export const STATUS_DECLINED = 10;
 export const STATUS_CANCELED = 20;
 
 export const useCurrentUserId = () => {
-  const [currentUserId] = useState(1);
+  const [currentUserId, setCurrentUserId] = useState();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios(`${apiUrl}/users/profile`);
+
+      setCurrentUserId(result.data.user.id);
+    };
+
+    fetchData();
+  }, []);
 
   return currentUserId;
 };
@@ -30,13 +41,24 @@ export const useUsers = () => {
   return [users];
 };
 
+export const useOtherUsers = () => {
+  const currentUserId = useCurrentUserId();
+  const [users] = useUsers();
+
+  if (!currentUserId || ! users) return [];
+
+  const otherUsers = users.filter(user => user.id !== currentUserId);
+
+  return [otherUsers];
+};
+
 export const useCurrentUser = () => {
   const [user, setUser] = useState();
 
   const [users] = useUsers();
   const currentUserId = useCurrentUserId();
 
-  if (users && users.length && !user) {
+  if (currentUserId && users && users.length && !user) {
     setUser(users.filter(user => user.id === currentUserId)[0]);
   }
 
@@ -49,12 +71,21 @@ export const useInvitations = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!currentUserId) return;
+
       const result = await axios(`${apiUrl}/users/${currentUserId}/invitations`);
 
-      const invitations = result.data.map(invitation => ({
-        ...invitation,
-        statusString: statusString(invitation.status),
-      }));
+      const invitations = result
+        .data
+        .map(invitation => ({
+          ...invitation,
+          statusString: statusString(invitation.status),
+        }))
+        .sort((a, b) => {
+          if (a.status < b.status) return -1;
+          if (a.status > b.status) return 1;
+          return 0;
+        });
 
       setInvitations(invitations);
     };
@@ -146,8 +177,6 @@ export const useAsyncEndpoint = (fn) => {
     () => {
       if (!req) return;
 
-      console.log(req);
-
       setRes({
         data: null,
         pending: true,
@@ -176,16 +205,24 @@ export const useAsyncEndpoint = (fn) => {
 
 export const usePostInviteEndpoint = () => useAsyncEndpoint(
   data => ({
-    url: `${apiUrl}/invitations`,
+    url: `${apiUrl}/invitations/send`,
     method: 'POST',
     data,
   }),
 );
 
 export const usePostChangeInvitationStatus = () => useAsyncEndpoint(
-  (id, status) => ({
-    url: `${apiUrl}/invitations/${id}/status`,
-    method: 'POST',
-    data: { status },
-  }),
+  (id, status) => {
+    const action = (() => {
+      if (status === STATUS_CANCELED) return 'cancel';
+      if (status === STATUS_ACCEPTED) return 'accept';
+      return 'decline';
+    }) ();
+
+    return {
+      url: `${apiUrl}/invitations/${id}/${action}`,
+      method: 'POST',
+      data: {},
+    };
+  },
 );
