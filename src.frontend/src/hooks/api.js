@@ -46,11 +46,24 @@ export const useCurrentUser = () => {
 export const useInvitations = () => {
   const [invitations, setInvitations] = useState();
 
+  const statusString = status => {
+    if (status === STATUS_ACCEPTED) return 'accepted';
+    if (status === STATUS_DECLINED) return 'declined';
+    if (status === STATUS_CANCELED) return 'canceled';
+
+    return 'created';
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios(`${apiUrl}/invitations.json`);
 
-      setInvitations(result.data);
+      const invitations = result.data.map(invitation => ({
+        ...invitation,
+        statusString: statusString(invitation.status),
+      }));
+
+      setInvitations(invitations);
     };
 
     fetchData();
@@ -72,6 +85,23 @@ export const useSentInvitations = () => {
   return [sentInvitations];
 };
 
+export const useFilteredSentInvitations = () => {
+  const [sentInvitations] = useSentInvitations();
+  const [filter, setFilter] = useState('');
+
+  if (!sentInvitations) return [null, filter, setFilter];
+
+  const check = invitation => (
+    invitation.created.indexOf(filter) >= 0
+    || invitation.receiver && invitation.receiver.indexOf(filter) >= 0
+    || invitation.statusString.indexOf(filter) >= 0
+  );
+
+  const filtered = sentInvitations.filter(check);
+
+  return [filtered, filter, setFilter];
+};
+
 export const useReceivedInvitations = () => {
   const [receivedInvitations, setReceivedInvitations] = useState();
 
@@ -83,6 +113,23 @@ export const useReceivedInvitations = () => {
   }
 
   return [receivedInvitations];
+};
+
+export const useFilteredReceivedInvitations = () => {
+  const [receivedInvitations] = useReceivedInvitations();
+  const [filter, setFilter] = useState('');
+
+  if (!receivedInvitations) return [null, filter, setFilter];
+
+  const check = invitation => (
+    invitation.created.indexOf(filter) >= 0
+    || invitation.sender && invitation.sender.indexOf(filter) >= 0
+    || invitation.statusString.indexOf(filter) >= 0
+  );
+
+  const filtered = receivedInvitations.filter(check);
+
+  return [filtered, filter, setFilter];
 };
 
 export const useAsyncEndpoint = (fn) => {

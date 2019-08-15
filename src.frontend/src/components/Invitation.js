@@ -33,7 +33,7 @@ function Invitation(props) {
   };
 
   const controllers = (() => {
-    if (updateResponse.pending || updateResponse.error) return <span>updating...</span>;
+    if (updateResponse.pending) return <span>updating...</span>;
 
     if (invitation.status !== STATUS_CREATED) return null;
 

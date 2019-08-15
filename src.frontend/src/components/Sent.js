@@ -1,12 +1,12 @@
 import React from 'react';
 
-import { useSentInvitations } from '../hooks/api';
+import { useFilteredSentInvitations } from '../hooks/api';
 import Invitation from "./Invitation";
 
-function Sent({ sentInvitations }) {
-  const [sent] = useSentInvitations();
+function Sent() {
+  const [sent, filter, setFilter] = useFilteredSentInvitations();
 
-  if (!sent) return <p>Loading...</p>
+  if (!sent) return <p>Loading...</p>;
 
   const invitations = sent.map(
     invitation => (
@@ -15,15 +15,21 @@ function Sent({ sentInvitations }) {
       </li>
     ),
   );
+  const invitationsBlock = (() => {
+    if (!invitations.length) return <p>Nothing found</p>;
 
-  if (!invitations.length) return <p>No invitations sent</p>;
+    return <ul>{invitations}</ul>
+  })();
+
+  const handleFilter = e => setFilter(e.target.value);
 
   return (
     <div className="sent">
       <h2>Sent</h2>
-      <ul>
-        {invitations}
-      </ul>
+      <div>
+        <input type="text" value={filter} onChange={handleFilter} />
+      </div>
+      {invitationsBlock}
     </div>
   );
 }

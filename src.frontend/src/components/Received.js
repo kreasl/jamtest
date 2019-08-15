@@ -1,29 +1,35 @@
 import React from 'react';
 
 import Invitation from './Invitation';
-import { useReceivedInvitations } from '../hooks/api';
+import { useFilteredReceivedInvitations } from '../hooks/api';
 
-function Received({ receivedInvitations }) {
-  const [received] = useReceivedInvitations();
+function Received() {
+  const [received, filter, setFilter] = useFilteredReceivedInvitations();
 
-  if (!received) return <p>Loading...</p>
+  if (!received) return <p>Loading...</p>;
 
   const invitations = received.map(
     invitation => (
       <li key={invitation.id}>
-        <Invitation invitation={invitation} type="received" />
+        <Invitation invitation={invitation} />
       </li>
     ),
   );
+  const invitationsBlock = (() => {
+    if (!invitations.length) return <p>Nothing found</p>;
 
-  if (!invitations.length) return <p>No invitations received</p>
+    return <ul>{invitations}</ul>
+  })();
+
+  const handleFilter = e => setFilter(e.target.value);
 
   return (
     <div className="received">
       <h2>Received</h2>
-      <ul>
-        {invitations}
-      </ul>
+      <div>
+        <input type="text" value={filter} onChange={handleFilter} />
+      </div>
+      {invitationsBlock}
     </div>
   );
 }
