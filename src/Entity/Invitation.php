@@ -26,13 +26,13 @@ class Invitation
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="sentInvitations")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $senderId;
+    private $sender;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="receivedInvitations")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $invitedId;
+    private $invited;
 
     /**
      * @ORM\Column(type="integer")
@@ -56,24 +56,24 @@ class Invitation
 
     public function getSenderId(): ?User
     {
-        return $this->senderId;
+        return $this->sender;
     }
 
-    public function setSenderId(?User $senderId): self
+    public function setSenderId(?User $sender): self
     {
-        $this->senderId = $senderId;
+        $this->sender = $sender;
 
         return $this;
     }
 
     public function getInvitedId(): ?User
     {
-        return $this->invitedId;
+        return $this->invited;
     }
 
-    public function setInvitedId(?User $invitedId): self
+    public function setInvitedId(?User $invited): self
     {
-        $this->invitedId = $invitedId;
+        $this->invited = $invited;
 
         return $this;
     }

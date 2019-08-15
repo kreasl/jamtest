@@ -24,12 +24,12 @@ class User
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="senderId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="sender", orphanRemoval=true)
      */
     private $sentInvitations;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="invitedId", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity="App\Entity\Invitation", mappedBy="invited", orphanRemoval=true)
      */
     private $receivedInvitations;
 

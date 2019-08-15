@@ -23,9 +23,17 @@ final class Version20190812185337 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE user (id INT AUTO_INCREMENT NOT NULL, name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE invitation (id INT AUTO_INCREMENT NOT NULL, sender_id_id INT NOT NULL, invited_id_id INT NOT NULL, status INT NOT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL, INDEX IDX_F11D61A26061F7CF (sender_id_id), INDEX IDX_F11D61A2721719B0 (invited_id_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE invitation ADD CONSTRAINT FK_F11D61A26061F7CF FOREIGN KEY (sender_id_id) REFERENCES user (id)');
-        $this->addSql('ALTER TABLE invitation ADD CONSTRAINT FK_F11D61A2721719B0 FOREIGN KEY (invited_id_id) REFERENCES user (id)');
+        $this->addSql('CREATE TABLE invitation (id INT AUTO_INCREMENT NOT NULL, sender_id INT NOT NULL, invited_id INT NOT NULL, message VARCHAR(255), status INT NOT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL, INDEX IDX_F11D61A26061F7CF (sender_id), INDEX IDX_F11D61A2721719B0 (invited_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
+        $this->addSql('ALTER TABLE invitation ADD CONSTRAINT FK_F11D61A26061F7CF FOREIGN KEY (sender_id) REFERENCES user (id)');
+        $this->addSql('ALTER TABLE invitation ADD CONSTRAINT FK_F11D61A2721719B0 FOREIGN KEY (invited_id) REFERENCES user (id)');
+    }
+
+    public function postUp(Schema $schema) : void {
+        $johnData = ['id' => 1, 'name' => 'John'];
+        $janeData = ['id' => 2, 'name' => 'Jane'];
+
+        $this->connection->insert('user', $johnData);
+        $this->connection->insert('user', $janeData);
     }
 
     public function down(Schema $schema) : void

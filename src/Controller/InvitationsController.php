@@ -30,6 +30,7 @@ class InvitationsController extends Controller
 
         $senderId = $data['senderId'] ?? $this->get('session')->get('userId');
         $receiverId = $data['receiverId'];
+        $message = $data['message'] ?? '';
 
         $sender = $this->getDoctrine()->getRepository(User::class)->findOneById($senderId);
         $receiver = $this->getDoctrine()->getRepository(User::class)->findOneById($receiverId);
@@ -37,6 +38,7 @@ class InvitationsController extends Controller
         $invitation = new Invitation();
         $invitation->setSenderId($sender);
         $invitation->setInvitedId($receiver);
+        
 
         $entityManager->persist($invitation);
         $entityManager->flush();

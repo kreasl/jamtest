@@ -110,7 +110,7 @@ export const useSentInvitations = () => {
   const [invitations] = useInvitations();
   const currentUserId = useCurrentUserId();
 
-  if (invitations && invitations.length && !sentInvitations) {
+  if (invitations && invitations && !sentInvitations) {
    setSentInvitations(invitations.filter(invite => invite.senderId === currentUserId))
   }
 
@@ -140,7 +140,7 @@ export const useReceivedInvitations = () => {
   const [invitations] = useInvitations();
   const currentUserId = useCurrentUserId();
 
-  if (invitations && invitations.length && !receivedInvitations) {
+  if (invitations && invitations && !receivedInvitations) {
     setReceivedInvitations(invitations.filter(invite => invite.receiverId === currentUserId))
   }
 
