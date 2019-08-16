@@ -70,7 +70,7 @@ class InvitationsController extends Controller
     }
 
     /**
-     * @Route("/invitations/{invitationId}/cancel", name="declineInvitation")
+     * @Route("/invitations/{invitationId}/cancel", name="cancelInvitation")
      */
     public function cancel($invitationId)
     {

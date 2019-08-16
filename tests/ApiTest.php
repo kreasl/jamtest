@@ -200,7 +200,7 @@ class ApiTest extends WebTestCase
             ['id' => $savedInvitationId]
         ));
 
-        $canceledInvitation = $this->getFromArray(
+        $acceptedInvitation = $this->getFromArray(
             $updatedInvitations,
             ['id' => $savedInvitationId]
         );
@@ -208,7 +208,7 @@ class ApiTest extends WebTestCase
         // I've used an in-place constant here because there's a Symfony recomendation to hardcode constants,
         // instead of load/generate them with Api functionality
         // That allows test to catch refactorings and ensure they went well
-        $this->assertTrue($canceledInvitation['status'] == self::STATUS_ACCEPTED);
+        $this->assertTrue($acceptedInvitation['status'] == self::STATUS_ACCEPTED);
     }
 
     public function testDeclineInvitation() {
@@ -261,7 +261,7 @@ class ApiTest extends WebTestCase
             ['id' => $savedInvitationId]
         ));
 
-        $canceledInvitation = $this->getFromArray(
+        $declinedInvitation = $this->getFromArray(
             $updatedInvitations,
             ['id' => $savedInvitationId]
         );
@@ -269,7 +269,7 @@ class ApiTest extends WebTestCase
         // I've used an in-place constant here because there's a Symfony recomendation to hardcode constants,
         // instead of load/generate them with Api functionality
         // That allows test to catch refactorings and ensure they went well
-        $this->assertTrue($canceledInvitation['status'] == self::STATUS_DECLINED);
+        $this->assertTrue($declinedInvitation['status'] == self::STATUS_DECLINED);
     }
 
     private function inArray($arr, $conditions)
