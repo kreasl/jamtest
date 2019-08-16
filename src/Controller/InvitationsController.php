@@ -77,7 +77,7 @@ class InvitationsController extends Controller
         $invitation = $this->getDoctrine()->getRepository(Invitation::class)->findOneById($invitationId);
         $entityManager = $this->getDoctrine()->getManager();
 
-        $invitation->setStatus(Invitation::STATUS_DECLINED);
+        $invitation->setStatus(Invitation::STATUS_CANCELED);
 
         $entityManager->persist($invitation);
         $entityManager->flush();
