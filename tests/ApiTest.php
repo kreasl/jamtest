@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ApiTest extends WebTestCase
 {
+    const STATUS_ACCEPTED = 1;
+    const STATUS_DECLINED = 10;
     const STATUS_CANCELED = 20;
 
     /**
@@ -108,7 +110,7 @@ class ApiTest extends WebTestCase
             [],
             json_encode($invitation)
         );
-        $client->request('GET', '/users/1/invitations');
+        $client->request('GET', '/users/1/invitations/sent');
 
         $response = $client->getResponse();
         $invitations = json_decode($response->getContent(), true);
@@ -148,9 +150,127 @@ class ApiTest extends WebTestCase
         $this->assertTrue($canceledInvitation['status'] == self::STATUS_CANCELED);
     }
 
-    public function testAcceptInvitation() {}
+    public function testAcceptInvitation() {
+        $invitation = [
+            'receiverId' => 2,
+            'message' => 'Test send invitation ' . $this->hash(),
+        ];
 
-    public function testDeclineInvitation() {}
+        $client = self::createClient();
+
+        $client->request('GET', '/login/1');
+        $client->request(
+            'POST',
+            '/invitations/send',
+            [],
+            [],
+            [],
+            json_encode($invitation)
+        );
+
+        $client->request('GET', '/logout');
+        $client->request('get', '/login/2');
+
+        $client->request('GET', '/users/2/invitations/received');
+
+        $response = $client->getResponse();
+        $invitations = json_decode($response->getContent(), true);
+
+        $this->assertTrue(is_array($invitations));
+        $this->assertTrue($this->inArray(
+            $invitations,
+            ['message' => $invitation['message']]
+        ));
+
+        $savedInvitationId = $this->getFromArray(
+            $invitations,
+            ['message' => $invitation['message']]
+        )['id'];
+
+        $client->request('GET', '/invitations/' . $savedInvitationId . '/accept');
+
+        $client->request('GET', '/users/2/invitations/received');
+
+        $updatedResponse = $client->getResponse();
+        $updatedInvitations = json_decode($updatedResponse->getContent(), true);
+
+        $this->assertTrue(is_array($updatedInvitations));
+        $this->assertTrue($this->inArray(
+            $updatedInvitations,
+            ['id' => $savedInvitationId]
+        ));
+
+        $canceledInvitation = $this->getFromArray(
+            $updatedInvitations,
+            ['id' => $savedInvitationId]
+        );
+
+        // I've used an in-place constant here because there's a Symfony recomendation to hardcode constants,
+        // instead of load/generate them with Api functionality
+        // That allows test to catch refactorings and ensure they went well
+        $this->assertTrue($canceledInvitation['status'] == self::STATUS_ACCEPTED);
+    }
+
+    public function testDeclineInvitation() {
+        $invitation = [
+            'receiverId' => 2,
+            'message' => 'Test send invitation ' . $this->hash(),
+        ];
+
+        $client = self::createClient();
+
+        $client->request('GET', '/login/1');
+        $client->request(
+            'POST',
+            '/invitations/send',
+            [],
+            [],
+            [],
+            json_encode($invitation)
+        );
+
+        $client->request('GET', '/logout');
+        $client->request('get', '/login/2');
+
+        $client->request('GET', '/users/2/invitations/received');
+
+        $response = $client->getResponse();
+        $invitations = json_decode($response->getContent(), true);
+
+        $this->assertTrue(is_array($invitations));
+        $this->assertTrue($this->inArray(
+            $invitations,
+            ['message' => $invitation['message']]
+        ));
+
+        $savedInvitationId = $this->getFromArray(
+            $invitations,
+            ['message' => $invitation['message']]
+        )['id'];
+
+        $client->request('GET', '/invitations/' . $savedInvitationId . '/decline');
+
+        $client->request('GET', '/users/2/invitations/received');
+
+        $updatedResponse = $client->getResponse();
+        $updatedInvitations = json_decode($updatedResponse->getContent(), true);
+
+        $this->assertTrue(is_array($updatedInvitations));
+        $this->assertTrue($this->inArray(
+            $updatedInvitations,
+            ['id' => $savedInvitationId]
+        ));
+
+        $canceledInvitation = $this->getFromArray(
+            $updatedInvitations,
+            ['id' => $savedInvitationId]
+        );
+
+        // I've used an in-place constant here because there's a Symfony recomendation to hardcode constants,
+        // instead of load/generate them with Api functionality
+        // That allows test to catch refactorings and ensure they went well
+        $this->assertTrue($canceledInvitation['status'] == self::STATUS_DECLINED);
+    }
 
     private function inArray($arr, $conditions)
     {
