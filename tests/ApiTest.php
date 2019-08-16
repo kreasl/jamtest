@@ -126,18 +126,19 @@ class ApiTest extends WebTestCase
 
         $client->request('GET', '/invitations/' . $savedInvitationId . '/cancel');
 
-        var_dump('/invitations/' . $savedInvitationId . '/cancel');
-
         $client->request('GET', '/users/1/invitations/sent');
 
-        $this->assertTrue(is_array($invitations));
+        $updatedResponse = $client->getResponse();
+        $updatedInvitations = json_decode($updatedResponse->getContent(), true);
+
+        $this->assertTrue(is_array($updatedInvitations));
         $this->assertTrue($this->inArray(
-            $invitations,
+            $updatedInvitations,
             ['id' => $savedInvitationId]
         ));
 
         $canceledInvitation = $this->getFromArray(
-            $invitations,
+            $updatedInvitations,
             ['id' => $savedInvitationId]
         );
 
