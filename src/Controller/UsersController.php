@@ -59,6 +59,10 @@ class UsersController extends Controller
      */
     public function invitations($userId)
     {
+        return $this->json([
+            'hash' => microtime()
+        ]);
+
         $user = $this->getDoctrine()->getRepository(User::class)->findOneById($userId);
         $invitations = array_merge(
             $user->getSentInvitations()->getValues(),

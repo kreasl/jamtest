@@ -11,15 +11,6 @@ use App\Entity\Invitation;
 class InvitationsController extends Controller
 {
     /**
-     * @Route("/invitations", name="createInvitation")
-     */
-    public function index() {
-        return $this->json([
-            'success' => true,
-        ]);
-    }
-
-    /**
      * @Route("/invitations/send", name="sendInvitation")
      */
     public function send(Request $request)
